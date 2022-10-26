@@ -89,7 +89,6 @@ import io.micronaut.http.netty.stream.StreamedHttpResponse;
 import io.micronaut.http.sse.Event;
 import io.micronaut.http.uri.UriBuilder;
 import io.micronaut.http.uri.UriTemplate;
-import io.micronaut.jackson.databind.JacksonDatabindMapper;
 import io.micronaut.json.JsonMapper;
 import io.micronaut.json.codec.JsonMediaTypeCodec;
 import io.micronaut.json.codec.JsonStreamMediaTypeCodec;
@@ -1819,7 +1818,7 @@ public class DefaultHttpClient implements
     }
 
     private static MediaTypeCodecRegistry createDefaultMediaTypeRegistry() {
-        JsonMapper mapper = new JacksonDatabindMapper();
+        JsonMapper mapper = JsonMapper.createDefault();
         ApplicationConfiguration configuration = new ApplicationConfiguration();
         return MediaTypeCodecRegistry.of(
                 new JsonMediaTypeCodec(mapper, configuration, null),
@@ -1834,7 +1833,7 @@ public class DefaultHttpClient implements
         return InvocationInstrumenter.combine(invocationInstrumenterFactories.stream()
                 .map(InvocationInstrumenterFactory::newInvocationInstrumenter)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList()));
+                .toList());
     }
 
     static boolean isSecureScheme(String scheme) {
@@ -1947,7 +1946,6 @@ public class DefaultHttpClient implements
         private final HttpPostRequestEncoder encoder;
 
         /**
-         * @param scheme                 The scheme
          * @param nettyRequest           The Netty request
          * @param encoder                The encoder
          */
@@ -1957,8 +1955,8 @@ public class DefaultHttpClient implements
         }
 
         /**
-         * @param channel     The channel
-         * @param channelPool The channel pool
+         * @param poolHandle  The pool handle
+         * @param isSecure    Is the connection secure
          * @param emitter     The emitter
          */
         protected void write(ConnectionManager.PoolHandle poolHandle, boolean isSecure, FluxSink<?> emitter) {
